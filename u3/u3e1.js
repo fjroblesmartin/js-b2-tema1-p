@@ -4,6 +4,24 @@
 
 // Escribe aquí tu solución / escriviu aquí la vostra solució:
 
+function getAJoke(callback) {
+  // Retornamos la promesa generada por fetch
+  return fetch('https://geek-jokes.sameerkumar.website/api?format=json')
+    .then((response) => {
+      // Procesamos la respuesta para obtener el JSON
+      return response.json();
+    })
+    .catch((error) => {
+      // Si ocurre un error (de red o de procesamiento), 
+      // ejecutamos el callback con el error
+      if (typeof callback === 'function') {
+        callback(error);
+      }
+      // Re-lanzamos el error para que la promesa 
+      // devuelta mantenga el estado de rechazada
+      throw error;
+    });
+}
 
 /**
 * TEST
