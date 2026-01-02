@@ -5,91 +5,97 @@
 //Escribe aquí tu solución / escriviu aquí la vostra solució:
 
 function numberArray(maxSize) {
-    // Variables internas (privadas gracias al closure)
-    let _list = undefined;
-    const _max = maxSize;
+  // Constantes de error
+  const ERROR_1 = "La estructura ya ha sido inicializada.";
+  const ERROR_2 = "La longitud del array supera el máximo permitido.";
+  const ERROR_3 = "Todos los elementos deben ser números.";
 
-    // Constantes de error
-    const ERROR_1 = "La estructura ya ha sido inicializada.";
-    const ERROR_2 = "La longitud del array supera el máximo permitido.";
-    const ERROR_3 = "Todos los elementos deben ser números.";
+  // Variables internas (Estado de la closure)
+  let _list = undefined;
+  const _max = maxSize;
 
-    // --- FUNCIONES INTERNAS ---
+  // --- Funciones Internas ---
 
-    const _checkItems = (items) => {
-        const arrayToCheck = Array.isArray(items) ? items : [items];
-        return arrayToCheck.every(item => typeof item === 'number');
-    };
+  const _checkItems = (items) => {
+    const target = Array.isArray(items) ? items : [items];
+    return target.every(item => typeof item === 'number');
+  };
 
-    const _addItem = (number) => {
-        if (_list.length < _max) {
-            _list.push(number);
-            return true;
-        }
-        return false;
-    };
+  const _addItem = (num) => {
+    if (_list.length < _max) {
+      _list.push(num);
+      return true;
+    }
+    return false;
+  };
 
-    const _removeItem = (number) => {
-        const index = _list.indexOf(number);
-        if (index !== -1) {
-            _list.splice(index, 1);
-        }
-        return true;
-    };
+  const _removeItem = (num) => {
+    const index = _list.indexOf(num);
+    if (index !== -1) {
+      _list.splice(index, 1);
+    }
+    return true;
+  };
 
-    // --- MÉTODOS PÚBLICOS ---
+  // --- Métodos Expuestos ---
 
-    const init = (numbers) => {
-        if (initialized()) return ERROR_1;
-        if (!Array.isArray(numbers)) return ERROR_3;
-        if (numbers.length > _max) return ERROR_2;
-        if (!_checkItems(numbers)) return ERROR_3;
+  const init = (arr) => {
+    if (initialized()) return ERROR_1;
+    if (arr.length > _max) return ERROR_2;
+    if (!_checkItems(arr)) return ERROR_3;
 
-        _list = [...numbers]; // Copia para evitar mutaciones externas
-        return true;
-    };
+    _list = [...arr]; // Inicializamos con una copia
+    return true;
+  };
 
-    const initialized = () => _list !== undefined;
+  const initialized = () => _list !== undefined;
 
-    const length = () => (initialized() ? _list.length : 0);
+  const length = () => {
+    if (!initialized()) return undefined;
+    return _list.length;
+  };
 
-    const getList = () => (initialized() ? [..._list] : []);
+  const getList = () => {
+    if (!initialized()) return [];
+    return [..._list]; // Devolvemos una COPIA
+  };
 
-    const add = (items) => {
-        if (!initialized()) return false;
-        if (!_checkItems(items)) return ERROR_3;
+  const add = (items) => {
+    if (!initialized()) return false;
+    if (!_checkItems(items)) return ERROR_3;
 
-        const itemsToAdd = Array.isArray(items) ? items : [items];
-        let allAdded = true;
+    const toAdd = Array.isArray(items) ? items : [items];
+    let allAdded = true;
 
-        for (const item of itemsToAdd) {
-            if (!_addItem(item)) {
-                allAdded = false;
-            }
-        }
-        return allAdded;
-    };
+    for (const item of toAdd) {
+      if (!_addItem(item)) {
+        allAdded = false;
+      }
+    }
+    return allAdded;
+  };
 
-    const remove = (items) => {
-        if (!initialized()) return false;
-        if (!_checkItems(items)) return ERROR_3;
+  const remove = (items) => {
+    if (!initialized()) return false;
+    if (!_checkItems(items)) return ERROR_3;
 
-        const itemsToRemove = Array.isArray(items) ? items : [items];
-        itemsToRemove.forEach(item => _removeItem(item));
-        return true;
-    };
+    const toRemove = Array.isArray(items) ? items : [items];
+    for (const item of toRemove) {
+      _removeItem(item);
+    }
+    return true;
+  };
 
-    // Retornamos el objeto con la interfaz pública
-    return {
-        init,
-        initialized,
-        length,
-        items: getList,
-        add,
-        remove
-    };
+  // Retorno del objeto con la interfaz pública
+  return {
+    init,
+    initialized,
+    length,
+    items: getList,
+    add,
+    remove
+  };
 }
-
 
 
 /**

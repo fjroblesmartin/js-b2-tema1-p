@@ -1,13 +1,16 @@
-const GREET_TYPES = {
+import basicEncrypt from "./encrypt.js"; // (B) Importcion default
+
+// (C) Exportacion de la constante y las funciones
+export const GREET_TYPES = {
     HI: 'hi',
     BYE: 'bye'
 }
 
-function sayHi(name) {
+export function sayHi(name) {
     return encryptedGreeting(name, GREET_TYPES.HI);
 }
 
-function sayBye(name) {
+export function sayBye(name) {
     return encryptedGreeting(name, GREET_TYPES.BYE);
 }
 

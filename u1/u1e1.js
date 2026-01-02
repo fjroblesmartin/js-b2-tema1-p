@@ -8,7 +8,8 @@ function conditionalCallback(callback, param) {
   // Verificamos si param existe y es un valor no falso, no nulo, no vacio, ...
   if (param) {
     // Si es verdadero, ejecutamos la función callback pasandole param como parámetro
-    return callback(param);
+    callback(param);
+    return true;
   } else {
     // Si no está definido o es equivalente a false, devuelve false
     return false;

@@ -41,7 +41,7 @@ class ClassroomReport {
     if (list.length === 0) return 0;
 
     const totalScore = list.reduce((acc, student) => acc + student.score, 0);
-    return (totalScore / list.length).toFixed(2);
+    return Number((totalScore / list.length).toFixed(2));
   }
 
   // E. Método bestStudent

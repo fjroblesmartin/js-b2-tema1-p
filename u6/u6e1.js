@@ -4,28 +4,9 @@
 
 //Escribe aquí tu solución / escriviu aquí la vostra solució:
 
-
-// Función interna (no se exporta) que usa el cifrado
-const encryptedGreeting = (text) => {
-    return basicEncrypt(text);
-};
-
-export function sayHi(name) {
-    return encryptedGreeting(`Hola, ${name}`);
-}
-
-export function sayBye(name) {
-    return encryptedGreeting(`Adiós, ${name}`);
-}
-
 // u6e1.js
 import { GREET_TYPES, sayHi, sayBye } from './modules/greeting.js';
 
-/**
- * Función que gestiona los saludos según el tipo
- * @param {string} name 
- * @param {string} type 
- */
 function doGreet(name, type) {
     if (type === GREET_TYPES.HI) {
         return sayHi(name);

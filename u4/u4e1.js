@@ -5,14 +5,14 @@
 //Escribe aquí tu solución / escriviu aquí la vostra solució:
 
 async function countDown(amount, stepCallback) {
-  // A. Validación del callback
+  // A. Validación: El callback debe ser una función
   if (typeof stepCallback !== 'function') {
     throw new Error("ERROR. Es obligatorio el paso de un callback como segundo parámetro.");
   }
 
-  // B. Retorno de la promesa
+  // B. Respuesta: Retornamos la Promesa
   return new Promise((resolve, reject) => {
-    // Validación de la cantidad de pasos
+    // Validación: La cantidad debe ser mayor que 0
     if (amount <= 0) {
       return reject(new Error("ERROR. La cantidad ha de ser positiva y mayor que 0."));
     }
@@ -20,17 +20,18 @@ async function countDown(amount, stepCallback) {
     let currentCount = amount;
 
     const intervalId = setInterval(() => {
-      // Ejecutamos el callback con el valor actual
+      // 1. Ejecutamos el callback con el valor actual
       stepCallback(currentCount);
 
-      // Si llegamos a 0, limpiamos el intervalo y resolvemos la promesa
+      // 2. Comprobamos si hemos terminado el paso 0
       if (currentCount === 0) {
         clearInterval(intervalId);
         resolve(true);
+      } else {
+        // 3. Decrementamos para el siguiente ciclo
+        currentCount--;
       }
-
-      currentCount--;
-    }, 100); // 100 milisegundos entre pasos
+    }, 100);
   });
 }
 
