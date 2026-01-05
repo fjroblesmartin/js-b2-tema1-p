@@ -4,35 +4,37 @@
 
 //Escribe aquí tu solución / escriviu aquí la vostra solució:
 
-async function countDown(amount, stepCallback) {
-  // A. Validación: El callback debe ser una función
-  if (typeof stepCallback !== 'function') {
-    throw new Error("ERROR. Es obligatorio el paso de un callback como segundo parámetro.");
-  }
-
-  // B. Respuesta: Retornamos la Promesa
-  return new Promise((resolve, reject) => {
-    // Validación: La cantidad debe ser mayor que 0
-    if (amount <= 0) {
-      return reject(new Error("ERROR. La cantidad ha de ser positiva y mayor que 0."));
+function countDown(amount, stepCallback) {
+    // --- A. VALIDACIÓN SÍNCRONA ---
+    // Verificamos si el callback es una función válida antes de crear la promesa.
+    if (typeof stepCallback !== 'function') {
+        throw new Error("ERROR. Es obligatorio el paso de un callback como segundo parámetro.");
     }
 
-    let currentCount = amount;
+    // --- B. RESPUESTA (PROMESA) ---
+    return new Promise((resolve, reject) => {
+        // 1. Criterio de Rechazo: Cantidad menor o igual a 0
+        if (typeof amount !== 'number' || amount <= 0) {
+            return reject(new Error("ERROR. La cantidad ha de ser positiva y mayor que 0."));
+        }
 
-    const intervalId = setInterval(() => {
-      // 1. Ejecutamos el callback con el valor actual
-      stepCallback(currentCount);
+        let currentStep = amount;
 
-      // 2. Comprobamos si hemos terminado el paso 0
-      if (currentCount === 0) {
-        clearInterval(intervalId);
-        resolve(true);
-      } else {
-        // 3. Decrementamos para el siguiente ciclo
-        currentCount--;
-      }
-    }, 100);
-  });
+        // 2. Intervalo de ejecución (100ms)
+        const timerId = setInterval(() => {
+            // Llamamos al callback con el valor actual
+            stepCallback(currentStep);
+
+            // Decrementamos el contador
+            currentStep--;
+
+            // Verificamos si la cuenta atrás ha terminado (llegó a 0)
+            if (currentStep < 0) {
+                clearInterval(timerId); // Limpiamos el intervalo
+                resolve(true);          // 3. Resolución con valor true
+            }
+        }, 100);
+    });
 }
 
 /**

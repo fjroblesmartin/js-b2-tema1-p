@@ -4,98 +4,143 @@
 
 //Escribe aquí tu solución / escriviu aquí la vostra solució:
 
-function numberArray(maxSize) {
-  // Constantes de error
-  const ERROR_1 = "La estructura ya ha sido inicializada.";
-  const ERROR_2 = "La longitud del array supera el máximo permitido.";
-  const ERROR_3 = "Todos los elementos deben ser números.";
+/**
+ * Crea una estructura de array especial encapsulada (Closure).
+ * @param {number} maxElements - (Opcional) Define el límite _max. Por defecto 10.
+ */
+function numberArray(maxElements = 10) {
+    // --- CONSTANTES Y VARIABLES PRIVADAS ---
+    let _list; // Inicialmente undefined
+    const _max = maxElements;
 
-  // Variables internas (Estado de la closure)
-  let _list = undefined;
-  const _max = maxSize;
+    // Mensajes de error
+    const ERROR_1 = "ERROR. La estructura ya ha sido inicializada.";
+    const ERROR_2 = "ERROR. La longitud del array supera el máximo permitido.";
+    const ERROR_3 = "ERROR. Todos los elementos han de ser números.";
 
-  // --- Funciones Internas ---
+    // --- MÉTODOS PRIVADOS Y HELPERS ---
 
-  const _checkItems = (items) => {
-    const target = Array.isArray(items) ? items : [items];
-    return target.every(item => typeof item === 'number');
-  };
+    // B. Función initialized
+    const initialized = () => {
+        return typeof _list !== 'undefined';
+    };
 
-  const _addItem = (num) => {
-    if (_list.length < _max) {
-      _list.push(num);
-      return true;
-    }
-    return false;
-  };
+    // C. Función _checkItems
+    // Verifica si un array (o un elemento convertido a array) contiene solo números
+    const _checkItems = (items) => {
+        const arr = Array.isArray(items) ? items : [items];
+        return arr.every(item => typeof item === 'number');
+    };
 
-  const _removeItem = (num) => {
-    const index = _list.indexOf(num);
-    if (index !== -1) {
-      _list.splice(index, 1);
-    }
-    return true;
-  };
+    // D. Función _addItem
+    // Intenta añadir un item. Devuelve false si supera la capacidad.
+    const _addItem = (number) => {
+        if (!initialized()) return false; // Seguridad extra
+        
+        if (_list.length < _max) {
+            _list.push(number);
+            return true;
+        }
+        return false;
+    };
 
-  // --- Métodos Expuestos ---
+    // E. Función _removeItem
+    // Borra la primera coincidencia. Siempre devuelve true.
+    const _removeItem = (number) => {
+        if (!initialized()) return true;
 
-  const init = (arr) => {
-    if (initialized()) return ERROR_1;
-    if (arr.length > _max) return ERROR_2;
-    if (!_checkItems(arr)) return ERROR_3;
+        const index = _list.indexOf(number);
+        if (index !== -1) {
+            _list.splice(index, 1);
+        }
+        return true;
+    };
 
-    _list = [...arr]; // Inicializamos con una copia
-    return true;
-  };
+    // G. Función getList (internal)
+    // Devuelve una COPIA del array
+    const getList = () => {
+        if (!initialized()) return []; 
+        return [..._list];
+    };
 
-  const initialized = () => _list !== undefined;
+    // --- MÉTODOS PÚBLICOS EXPUESTOS ---
 
-  const length = () => {
-    if (!initialized()) return undefined;
-    return _list.length;
-  };
+    // A. Función init
+    const init = (initialArray) => {
+        // 1. Validar si ya está inicializado
+        if (initialized()) {
+            return ERROR_1;
+        }
 
-  const getList = () => {
-    if (!initialized()) return [];
-    return [..._list]; // Devolvemos una COPIA
-  };
+        // 2. Validar longitud máxima
+        if (initialArray.length > _max) {
+            return ERROR_2;
+        }
 
-  const add = (items) => {
-    if (!initialized()) return false;
-    if (!_checkItems(items)) return ERROR_3;
+        // 3. Validar tipos (todos números)
+        if (!_checkItems(initialArray)) {
+            return ERROR_3;
+        }
 
-    const toAdd = Array.isArray(items) ? items : [items];
-    let allAdded = true;
+        // 4. Inicialización correcta (guardamos copia para evitar referencia externa)
+        _list = [...initialArray];
+        return true;
+    };
 
-    for (const item of toAdd) {
-      if (!_addItem(item)) {
-        allAdded = false;
-      }
-    }
-    return allAdded;
-  };
+    // F. Función length
+    const length = () => {
+        return initialized() ? _list.length : 0;
+    };
 
-  const remove = (items) => {
-    if (!initialized()) return false;
-    if (!_checkItems(items)) return ERROR_3;
+    // H. Función add
+    const add = (items) => {
+        // 1. Validar tipos
+        if (!_checkItems(items)) {
+            return ERROR_3;
+        }
 
-    const toRemove = Array.isArray(items) ? items : [items];
-    for (const item of toRemove) {
-      _removeItem(item);
-    }
-    return true;
-  };
+        // Normalizamos entrada a array
+        const itemsToAdd = Array.isArray(items) ? items : [items];
+        let allAdded = true;
 
-  // Retorno del objeto con la interfaz pública
-  return {
-    init,
-    initialized,
-    length,
-    items: getList,
-    add,
-    remove
-  };
+        // 2. Insertar uno a uno
+        itemsToAdd.forEach(num => {
+            const success = _addItem(num);
+            if (!success) allAdded = false;
+        });
+
+        return allAdded;
+    };
+
+    // I. Función remove
+    const remove = (items) => {
+        // 1. Validar tipos
+        if (!_checkItems(items)) {
+            return ERROR_3;
+        }
+
+        // Normalizamos entrada a array
+        const itemsToRemove = Array.isArray(items) ? items : [items];
+
+        // 2. Eliminar uno a uno
+        itemsToRemove.forEach(num => {
+            _removeItem(num);
+        });
+
+        return true;
+    };
+
+    // RETORNO DEL OBJETO (Interfaz Pública)
+    return {
+        init: init,
+        initialized: initialized,
+        length: length,
+        items: getList, // Mapeado a getList
+        add: add,
+        remove: remove
+    };
 }
+
 
 
 /**
